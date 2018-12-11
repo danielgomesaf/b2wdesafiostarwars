@@ -7,11 +7,15 @@ import javax.validation.Valid;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,6 +47,7 @@ public class PlanetController {
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
+	@ResponseBody
 	public Planet createPlanet(@Valid @RequestBody Planet planet) throws Exception {
 		
 		Planet existingPlanet = repository.findByName(planet.getName());
@@ -61,7 +66,14 @@ public class PlanetController {
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			for (int i = 1; i < 8; i++) {
-				ResponseEntity<String> response = restTemplate.getForEntity("https://swapi.co/api/planets/?page=" + i, String.class);
+				HttpHeaders headers = new HttpHeaders();
+				headers.set(HttpHeaders.USER_AGENT, "cheese");
+				HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+				ResponseEntity<String> response = restTemplate.exchange("https://swapi.co/api/planets/?page=" + i,
+						HttpMethod.GET,
+						entity,
+						String.class);
+				//ResponseEntity<String> response = restTemplate.getForEntity("https://swapi.co/api/planets/?page=" + i, String.class);
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode responseBody = mapper.readTree(response.getBody());
 				if (responseBody != null && !responseBody.isMissingNode()) {
