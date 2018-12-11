@@ -3,6 +3,9 @@ package com.b2wdigital.starwars.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Planet {
 
 	@Id
@@ -10,14 +13,14 @@ public class Planet {
 	
 	private String name;
 	
-	private String weather;
+	private String climate;
 	
 	private String terrain;
 	
 	private int howManyTimesOnMovies;
 
-	public ObjectId getId() {
-		return id;
+	public String getId() {
+		return id.toHexString();
 	}
 
 	public void setId(ObjectId id) {
@@ -32,12 +35,12 @@ public class Planet {
 		this.name = name;
 	}
 
-	public String getWeather() {
-		return weather;
+	public String getClimate() {
+		return climate;
 	}
 
-	public void setWeather(String weather) {
-		this.weather = weather;
+	public void setClimate(String climate) {
+		this.climate = climate;
 	}
 
 	public String getTerrain() {
